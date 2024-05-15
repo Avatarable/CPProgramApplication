@@ -28,7 +28,7 @@ namespace CPProgramApplication.Controllers
             var program = await _cosmosDbService.GetProgramByIdAsync(id);
             if (program == null)
             {
-                return NotFound(); // Program not found
+                return NotFound();
             }
 
             return Ok(program);

@@ -1,5 +1,6 @@
 ﻿using CPProgramApplication.Data.Enums;
 using CPProgramApplication.Data.Models;
+using CPProgramApplication.Data.ViewModels;
 using CPProgramApplication.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,12 +19,13 @@ namespace CPProgramApplication.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCustomQuestion([FromBody] CustomQuestion customQuestion)
+        public async Task<IActionResult> AddCustomQuestion([FromBody] QuestionViewModel customQuestion)
         {
+
             var addedQuestion = await _cosmosDbService.CreateQuestionAsync(customQuestion);
             if (addedQuestion == null)
             {
-                return NotFound(); // Program not found
+                return NotFound();
             }
 
             return Ok(addedQuestion);

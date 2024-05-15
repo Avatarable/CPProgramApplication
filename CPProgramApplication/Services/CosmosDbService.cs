@@ -1,6 +1,7 @@
 ﻿using CPProgramApplication.Data.DTOs;
 using CPProgramApplication.Data.Enums;
 using CPProgramApplication.Data.Models;
+using CPProgramApplication.Data.ViewModels;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
 using System.Net;
@@ -24,9 +25,17 @@ namespace CPProgramApplication.Services
             _programsContainer = database.GetContainer(_cosmosDbSettings.ProgramsContainerName);
         }
 
-        public async Task<CustomQuestion> CreateQuestionAsync(CustomQuestion question)
+        public async Task<CustomQuestion> CreateQuestionAsync(QuestionViewModel request)
         {
-            question.Id = Guid.NewGuid().ToString();
+            var question = new CustomQuestion
+            {
+                Id = Guid.NewGuid().ToString(),
+                Text = request.Text,
+                Choices = request.Choices,
+                MaxChoicesAllowed = request.MaxChoicesAllowed,
+                EnableOtherOption = request.EnableOtherOption,
+            };
+
             var response = await _questionsContainer.CreateItemAsync(question);
             return response.Resource;
         }
@@ -76,7 +85,6 @@ namespace CPProgramApplication.Services
         {
             program.Id = Guid.NewGuid().ToString();
 
-            // Create a new document (program) in the programs container
             ItemResponse<ProgramModel> response = await _programsContainer.CreateItemAsync(program);
 
             return response.Resource;
@@ -91,7 +99,7 @@ namespace CPProgramApplication.Services
             }
             catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
             {
-                return null; // Program with the specified ID not found
+                return null;
             }
         }
 
@@ -114,7 +122,6 @@ namespace CPProgramApplication.Services
         {
             customQuestion.Id = Guid.NewGuid().ToString();
 
-            // Add the custom question to the specified program's custom questions
             ProgramModel program = await GetProgramByIdAsync(programId);
             if (program != null)
             {
@@ -126,11 +133,24 @@ namespace CPProgramApplication.Services
             return null;
         }
 
-        public async Task<ApplicationForm> SubmitApplicationAsync(ApplicationForm applicationForm)
+        public async Task<ApplicationForm> SubmitApplicationAsync(ApplicationFormVM request)
         {
-            applicationForm.Id = Guid.NewGuid().ToString();
-
-            // Create a new document (application form) in the application forms container
+            var applicationForm = new ApplicationForm
+            {
+                Id = Guid.NewGuid().ToString(),
+                ProgramId = request.ProgramId,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+                Phone = request.Phone,
+                Nationality = request.Nationality,
+                CurrentResidence = request.CurrentResidence,
+                IDNUmber = request.IDNUmber,
+                DateOfBirth = request.DateOfBirth,
+                Gender = request.Gender,
+                QuestionAnswers = request.QuestionAnswers,
+            };
+                     
             ItemResponse<ApplicationForm> response = await _applicationFormsContainer.CreateItemAsync(applicationForm);
 
             return response.Resource;

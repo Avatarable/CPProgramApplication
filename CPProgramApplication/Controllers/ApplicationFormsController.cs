@@ -1,4 +1,5 @@
 ﻿using CPProgramApplication.Data.Models;
+using CPProgramApplication.Data.ViewModels;
 using CPProgramApplication.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ namespace CPProgramApplication.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubmitApplication([FromBody] ApplicationForm applicationForm)
+        public async Task<IActionResult> SubmitApplication([FromBody] ApplicationFormVM applicationForm)
         {
             var submittedForm = await _cosmosDbService.SubmitApplicationAsync(applicationForm);
             return Ok(submittedForm);
